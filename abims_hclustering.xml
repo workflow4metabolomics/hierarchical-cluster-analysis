@@ -2,6 +2,11 @@
 
     <description>using ctc R package for java-treeview</description>
 
+    <requirements>
+        <requirement type="package" version="1.1_4">r-batch</requirement>
+        <requirement type="package" version="1.52.0">bioconductor-ctc</requirement>
+    </requirements>
+
     <command interpreter="Rscript"><![CDATA[
         abims_hclustering.r file "$input" method $method link $link keep.hclust FALSE normalization $normalization sep "$sep" dec "$dec" && mv hclust.zip $outputzip
     ]]></command>
