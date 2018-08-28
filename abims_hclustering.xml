@@ -1,0 +1,222 @@
+<tool id="abims_hclustering" name="Hierarchical Clustering" version="1.1.2">
+
+    <description>using ctc R package for java-treeview</description>
+
+    <command interpreter="Rscript"><![CDATA[
+        abims_hclustering.r file "$input" method $method link $link keep.hclust FALSE normalization $normalization sep "$sep" dec "$dec" && mv hclust.zip $outputzip
+    ]]></command>
+
+    <inputs>
+        <param name="input" type="data" label="Data Matrix file" format="tabular" help="Matrix of numeric data with headers." />
+        <param name="method" type="select" label="Distance measure method" help="the distance measure to be used">
+            <option value="pearson" selected="true">pearson</option>
+            <option value="euclidean" >euclidean</option>
+            <option value="maximum" >maximum</option>
+            <option value="manhattan" >manhattan</option>
+            <option value="canberra" >canberra</option>
+            <option value="binary" >binary</option>
+            <option value="correlation" >correlation</option>
+            <option value="spearman" >spearman</option>
+        </param>
+        <param name="link" type="select" label="Agglomeration/Link method" help="the agglomeration method to be used">
+            <option value="ward" selected="true">ward</option>
+            <option value="single" >single</option>
+            <option value="complete" >complete</option>
+            <option value="average" >average</option>
+            <option value="mcquitty" >mcquitty</option>
+            <option value="median" >median</option>
+            <option value="centroid" >centroid</option>
+        </param>
+        <param name="normalization" type="select" label="Normalization by center and scale" help="Centering is done by subtracting the column means and scaling is done by dividing the (centered) columns of by their standard deviations">
+            <option value="T" selected="true">TRUE</option>
+            <option value="F" >FALSE</option>
+        </param>
+        
+        <param name="sep" type="select" format="text" optional="true">
+		<label>Separator of columns</label>
+		<option value="tabulation">tabulation</option>
+		<option value="semicolon">;</option>
+		<option value="comma">,</option>
+	</param>
+        <param name="dec" type="text" label="Decimal separator" value="." help="" />
+        
+        <!--<param name="nr_col_names" type="integer" label="names" value="2" help="number of the column with names of metabolits" />
+        <param name="from" type="integer" label="from" value="15" help="number of the column starting peak values data (to exlude all metadata)" />
+        <param name="to" type="integer" label="to" value="30" help="number of the column finishing peak values data (to exlude all metadata)" />
+        <param name="gr_number" type="integer" label="gr_number" value="2" help="number of groups (conditions)" />
+        <param name="nb_col_gr" type="text" label="nb_col_gr" value="8,8" help="number of column of each group; separate with coma as indicated; first position coresponding to the first group etc." />
+        <param name="threshold" type="float" label="threshold" value="0.01" help="max adjusted p.value accepted" />-->
+        
+    </inputs>
+
+    <outputs>
+		<data name="outputzip" format="zip" label="${input.name[:-4]}.heatmap.zip for Java Treeview" />
+    </outputs>
+
+    <stdio>
+        <exit_code range="1:" level="fatal" />
+    </stdio>
+
+    <help><![CDATA[
+
+
+		
+.. class:: infomark
+
+**Authors** Gildas Le Corguille  ABiMS - UPMC/CNRS - Station Biologique de Roscoff - gildas.lecorguille|at|sb-roscoff.fr 
+
+---------------------------------------------------
+
+=======================
+Hierarchical Clustering
+=======================
+
+-----------
+Description
+-----------
+
+This function compute hierachical clustering with function
+hcluster and export cluster to Java TreeView files format: jtreeview.sourceforge.net.
+
+This function performs a **hierarchical cluster analysis** using a set
+of dissimilarities for the n objects being clustered.  Initially,
+each object is assigned to its own cluster and then the algorithm
+proceeds iteratively, at each stage joining the two most similar
+clusters, continuing until there is just a single cluster.  At
+each stage distances between clusters are recomputed by the
+Lance-Williams dissimilarity update formula according to the
+particular clustering method being used.
+
+A number of different **clustering methods** are provided.  **Ward's**
+minimum variance method aims at finding compact, spherical
+clusters.  The **complete linkage** method finds similar clusters.
+The **single linkage** method (which is closely related to the
+minimal spanning tree) adopts a ‘friends of friends’ clustering
+strategy.  The other methods can be regarded as aiming for
+clusters with characteristics somewhere between the single and
+complete link methods.  Note however, that methods **median** and
+**centroid** are not leading to a monotone distance measure,
+or equivalently the resulting dendrograms can have so called
+inversions (which are hard to interpret).
+
+
+
+
+-----------------
+Workflow position
+-----------------
+
+
+**Upstream tools**
+
++---------------------------+----------------------------------------+--------+------------------------+
+| Name                      | Output file                            | Format | parameter              |   
++===========================+========================================+========+========================+
+|xcms.diffreport            |xset.diffreport.data_matrix.tsv         | Tabular| Data table file        |   
++---------------------------+----------------------------------------+--------+------------------------+
+|CAMERA.annotateDiffreport  |xset.annotatediffreport.data_matrix.tsv | Tabular| Data table file        |   
++---------------------------+----------------------------------------+--------+------------------------+
+|Anova                      |xset.anova_filtered.tabular             | Tabular| Data table file        |
++---------------------------+----------------------------------------+--------+------------------------+
+
+
+
+**Downstream tools**
+
++---------------------------+-----------------------------------------------+---------------------+
+| Name                      | Output file                                   | Format              | 
++===========================+===============================================+=====================+
+|Treeview (out of Galaxy)   | cdt,gtr and atr files needed for Java Treeview|Java Treeview formats|
++---------------------------+-----------------------------------------------+---------------------+
+
+
+
+-----------
+Input files
+-----------
+
++---------------------------+------------+
+| Parameter : num + label   |   Format   |
++===========================+============+
+| 1 : Data Matrix file      | Tabular    |
++---------------------------+------------+
+
+
+----------
+Parameters
+----------
+
+
+**Agglomeration or Link method:*
+
+A number of different clustering methods are provided. Ward's minimum variance method aims at finding compact, spherical clusters.
+The complete linkage method finds similar clusters. The single linkage method (which is closely related to the minimal spanning tree) adopts a ‘friends of friends’ clustering strategy.
+The other methods can be regarded as aiming for clusters with characteristics somewhere between the single and complete link methods.
+Note however, that methods median and centroid are not leading to a monotone distance measure, or equivalently the resulting dendrograms can have so called inversions (which are hard to interpret).
+
+
+
+------------
+Output files
+------------
+
+***.tab.hclust.zip**
+
+	| A zip file containing three files (hclust.atr, hclust.cdt and hclust.gtr) that are Treeview format. If you want to have more informations or download Treeview, you can visit the webiste:
+	| http://jtreeview.sourceforge.net
+	
+
+	
+------
+
+.. class:: infomark 
+
+You can continue your analysis using Treeview (outside of Galaxy) with the three files (atr,cdt and gtr) within the **xset.tab.hclust.zip** output.
+	
+
+	
+	
+---------------------------------------------------
+
+---------------
+Working example
+---------------
+
+
+Input files
+-----------
+
+**>A part of an example of Data Matrix file input**
+	
+
++--------+------------------+----------------+
+| Name   | Bur-eH_FSP_102   | Bur-eH_FSP_22  |
++========+==================+================+
+|M202T601| 91206595.7559783 |106808979.08546 |
++--------+------------------+----------------+
+|M234T851| 27249137.275504  |28824971.3177926|  
++--------+------------------+----------------+  
+
+
+Parameters
+----------
+
+	| Distance measure method  -> **pearson**
+	| Agglomeration/Link method -> **ward**
+	| Normalization by center and scale -> **TRUE**
+	| Separator of columns -> **tabulation**
+	| Decimal separator: -> **.**
+	
+
+
+Output files
+------------
+
+**Example of an dendrogram/heatmap generated by the Treeview tool**:
+
+.. image:: hclust.png
+
+
+    </help>
+
+]]></tool>
